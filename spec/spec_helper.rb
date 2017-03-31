@@ -1,0 +1,48 @@
+require 'bundler/setup'
+
+require 'activejob-google_cloud_pubsub'
+require 'timeout'
+
+RSpec.configure do |config|
+  # Enable flags like --only-failures and --next-failure
+  config.example_status_persistence_file_path = '.rspec_status'
+
+  config.expect_with :rspec do |rspec|
+    rspec.syntax = :expect
+  end
+
+  config.around :each, emulator: true do |example|
+    run_pubsub_emulator do |emulator_host|
+      @emulator_host = emulator_host
+
+      example.run
+    end
+  end
+
+  private
+
+  def run_pubsub_emulator(&block)
+    pipe = IO.popen('gcloud beta emulators pubsub start', err: %i(child out), pgroup: true)
+
+    Timeout.timeout 10 do
+      pipe.each do |line|
+        break if line.include?('INFO: Server started')
+
+        raise line if line.include?('Exception in thread')
+      end
+    end
+
+    host = `gcloud beta emulators pubsub env-init`.match(/^export PUBSUB_EMULATOR_HOST=(\S+)$/).values_at(1).first
+
+    block.call host
+  ensure
+    return unless pipe
+
+    begin
+      Process.kill :TERM, -Process.getpgid(pipe.pid)
+      Process.wait pipe.pid
+    rescue Errno::ESRCH, Errno::ECHILD
+      # already terminated
+    end
+  end
+end
