@@ -100,6 +100,8 @@ Default: number of logical cores
 
 Credentials of Google Cloud Platform. Please refer to [the document](https://github.com/GoogleCloudPlatform/google-cloud-ruby/blob/master/AUTHENTICATION.md) for details.
 
+## Development
+
 ``` sh
 $ bundle exec rake spec
 ```
