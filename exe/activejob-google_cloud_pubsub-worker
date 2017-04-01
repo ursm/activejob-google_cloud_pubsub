@@ -6,17 +6,17 @@ require 'optparse/kwargs'
 
 Version = ActiveJob::GoogleCloudPubsub::VERSION
 
-args = {
+opts = {
   require: './config/environment'
 }
 
-opt = OptionParser.new
+parser = OptionParser.new
 
-opt.on '--[no-]require=PATH' do |v|
-  args[:require] = v
+parser.on '--[no-]require=PATH' do |v|
+  opts[:require] = v
 end
 
-worker_args = opt.define_by_keywords(
+worker_opts = parser.define_by_keywords(
   {},
   ActiveJob::GoogleCloudPubsub::Worker.instance_method(:initialize),
   {
@@ -25,7 +25,7 @@ worker_args = opt.define_by_keywords(
   }
 )
 
-pubsub_args = opt.define_by_keywords(
+pubsub_opts = parser.define_by_keywords(
   {},
   Google::Cloud::Pubsub.method(:new),
   {
@@ -34,8 +34,8 @@ pubsub_args = opt.define_by_keywords(
   }
 )
 
-opt.parse ARGV
+parser.parse ARGV
 
-require args[:require] if args[:require]
+require opts[:require] if opts[:require]
 
-ActiveJob::GoogleCloudPubsub::Worker.new(**worker_args, **pubsub_args).run
+ActiveJob::GoogleCloudPubsub::Worker.new(**worker_opts, **pubsub_opts).run

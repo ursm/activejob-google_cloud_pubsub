@@ -21,13 +21,6 @@ module ActiveJob
         @pubsub = Google::Cloud::Pubsub.new(**pubsub_args)
       end
 
-      def subscription
-        topic = @pubsub.topic(topic_name(@queue_name), autocreate: true)
-
-        topic.subscription(subscription_name(@queue_name)) || topic.subscribe(subscription_name(@queue_name))
-      end
-      alias ensure_subscription subscription
-
       def run
         pool = Concurrent::ThreadPoolExecutor.new(min_threads: @min_threads, max_threads: @max_threads, max_queue: -1)
 
@@ -43,6 +36,13 @@ module ActiveJob
           end
         end
       end
+
+      def subscription
+        topic = @pubsub.topic(topic_name(@queue_name), autocreate: true)
+
+        topic.subscription(subscription_name(@queue_name)) || topic.subscribe(subscription_name(@queue_name))
+      end
+      alias ensure_subscription subscription
 
       private
 
