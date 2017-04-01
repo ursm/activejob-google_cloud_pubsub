@@ -1,5 +1,8 @@
 # ActiveJob::GoogleCloudPubsub
 
+[![Build Status](https://travis-ci.org/ursm/activejob-google_cloud_pubsub.svg?branch=master)](https://travis-ci.org/ursm/activejob-google_cloud_pubsub)
+[![Gem Version](https://badge.fury.io/rb/activejob-google_cloud_pubsub.svg)](https://badge.fury.io/rb/activejob-google_cloud_pubsub)
+
 Google Cloud Pub/Sub adapter and worker for ActiveJob
 
 ## Installation
