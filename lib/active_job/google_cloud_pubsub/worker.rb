@@ -15,10 +15,8 @@ module ActiveJob
 
       cattr_accessor(:logger) { Logger.new($stdout) }
 
-      def initialize(queue: 'default', min_threads: 0, max_threads: Concurrent.processor_count, **pubsub_args)
-        @queue_name, @min_threads, @max_threads = queue, min_threads, max_threads
-
-        @pubsub = Google::Cloud::Pubsub.new(**pubsub_args)
+      def initialize(queue: 'default', min_threads: 0, max_threads: Concurrent.processor_count, pubsub: Google::Cloud::Pubsub.new)
+        @queue_name, @min_threads, @max_threads, @pubsub = queue, min_threads, max_threads, pubsub
       end
 
       def run

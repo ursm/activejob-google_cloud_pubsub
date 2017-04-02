@@ -16,7 +16,7 @@ parser.on '--[no-]require=PATH' do |v|
   opts[:require] = v
 end
 
-worker_opts = parser.define_by_keywords(
+worker_args = parser.define_by_keywords(
   {},
   ActiveJob::GoogleCloudPubsub::Worker.instance_method(:initialize),
   {
@@ -25,7 +25,7 @@ worker_opts = parser.define_by_keywords(
   }
 )
 
-pubsub_opts = parser.define_by_keywords(
+pubsub_args = parser.define_by_keywords(
   {},
   Google::Cloud::Pubsub.method(:new),
   {
@@ -38,4 +38,6 @@ parser.parse ARGV
 
 require opts[:require] if opts[:require]
 
-ActiveJob::GoogleCloudPubsub::Worker.new(**worker_opts, **pubsub_opts).run
+pubsub = Google::Cloud::Pubsub.new(pubsub_args)
+
+ActiveJob::GoogleCloudPubsub::Worker.new(pubsub: pubsub, **worker_args).run

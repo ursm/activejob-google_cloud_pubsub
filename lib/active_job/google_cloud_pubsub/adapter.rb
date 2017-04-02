@@ -7,8 +7,8 @@ module ActiveJob
     class Adapter
       using PubsubExtension
 
-      def initialize(**pubsub_args)
-        @pubsub = Google::Cloud::Pubsub.new(pubsub_args)
+      def initialize(pubsub: Google::Cloud::Pubsub.new)
+        @pubsub = pubsub
       end
 
       def enqueue(job, attributes = {})

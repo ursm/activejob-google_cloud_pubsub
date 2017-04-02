@@ -1,11 +1,10 @@
 require 'spec_helper'
 
-require 'active_job'
 require 'json'
 require 'thread'
 require 'timeout'
 
-RSpec.describe ActiveJob::GoogleCloudPubsub, :emulator do
+RSpec.describe ActiveJob::GoogleCloudPubsub, :use_pubsub_emulator do
   class GreetingJob < ActiveJob::Base
     def perform(name)
       $queue.push "hello, #{name}!"
@@ -25,9 +24,7 @@ RSpec.describe ActiveJob::GoogleCloudPubsub, :emulator do
   around :each do |example|
     $queue = Thread::Queue.new
 
-    ActiveJob::Base.queue_adapter = ActiveJob::QueueAdapters::GoogleCloudPubsubAdapter.new(emulator_host: @emulator_host)
-
-    run_worker emulator_host: @emulator_host, &example
+    run_worker pubsub: Google::Cloud::Pubsub.new(emulator_host: @pubsub_emulator_host), &example
   end
 
   example do

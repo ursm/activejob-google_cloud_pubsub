@@ -1,4 +1,5 @@
 require 'active_job'
+require 'google/cloud/pubsub'
 
 module ActiveJob
   module GoogleCloudPubsub

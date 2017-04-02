@@ -61,10 +61,15 @@ If you hit the previous action, the job will be executed.
 When passing options to the adapter, you need to create the object instead of a symbol.
 
 ``` ruby
-Rails.application.config.active_job.queue_adapter = ActiveJob::QueueAdapters::GoogleCloudPubsubAdapter.new(options)
+Rails.application.config.active_job.queue_adapter = ActiveJob::QueueAdapters::GoogleCloudPubsubAdapter.new(
+  pubsub: Google::Cloud::Pubsub.new(
+    project: 'MY-PROJECT-ID',
+    keyfile: 'path/to/keyfile.json'
+  )
+)
 ```
 
-All options are passed to [`Google::Cloud::Pubsub.new`](http://googlecloudplatform.github.io/google-cloud-ruby/#/docs/google-cloud-pubsub/v0.23.2/google/cloud/pubsub?method=new-class).
+Please see [`Google::Cloud::Pubsub.new`](http://googlecloudplatform.github.io/google-cloud-ruby/#/docs/google-cloud-pubsub/v0.23.2/google/cloud/pubsub?method=new-class) for details.
 
 ### Worker
 
@@ -98,7 +103,7 @@ Default: number of logical cores
 
 #### `--project=PROJECT_ID`, `--keyfile=PATH`
 
-Credentials of Google Cloud Platform. Please refer to [the document](https://github.com/GoogleCloudPlatform/google-cloud-ruby/blob/master/AUTHENTICATION.md) for details.
+Credentials of Google Cloud Platform. Please see [the document](https://github.com/GoogleCloudPlatform/google-cloud-ruby/blob/master/AUTHENTICATION.md) for details.
 
 ## Development
 

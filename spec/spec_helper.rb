@@ -11,11 +11,19 @@ RSpec.configure do |config|
     rspec.syntax = :expect
   end
 
-  config.around :each, emulator: true do |example|
-    run_pubsub_emulator do |emulator_host|
-      @emulator_host = emulator_host
+  config.around :each, use_pubsub_emulator: true do |example|
+    run_pubsub_emulator do |host|
+      pubsub = Google::Cloud::Pubsub.new(emulator_host: host)
 
-      example.run
+      orig, ActiveJob::Base.queue_adapter = ActiveJob::Base.queue_adapter, ActiveJob::QueueAdapters::GoogleCloudPubsubAdapter.new(pubsub: pubsub)
+
+      begin
+        @pubsub_emulator_host = host
+
+        example.run
+      ensure
+        ActiveJob::Base.queue_adapter = orig
+      end
     end
   end
 
