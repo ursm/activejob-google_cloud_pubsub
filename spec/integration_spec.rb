@@ -32,7 +32,7 @@ RSpec.describe ActiveJob::GoogleCloudPubsub, :use_pubsub_emulator do
     GreetingJob.set(wait: 0.1).perform_later 'bob'
     GreetingJob.set(wait_until: Time.now + 0.2).perform_later 'charlie'
 
-    Timeout.timeout 1 do
+    Timeout.timeout 2 do
       expect(3.times.map { $queue.pop }).to contain_exactly(
         'hello, alice!',
         'hello, bob!',
