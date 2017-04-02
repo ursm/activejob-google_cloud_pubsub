@@ -39,4 +39,8 @@ require opts[:require] if opts[:require]
 
 pubsub = Google::Cloud::Pubsub.new(pubsub_args)
 
-ActiveJob::GoogleCloudPubsub::Worker.new(pubsub: pubsub, **worker_args).run
+begin
+  ActiveJob::GoogleCloudPubsub::Worker.new(pubsub: pubsub, **worker_args).run
+rescue Interrupt
+  exit
+end
