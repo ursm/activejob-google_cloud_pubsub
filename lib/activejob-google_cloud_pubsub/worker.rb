@@ -1,4 +1,5 @@
 require 'active_job/base'
+require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/numeric/time'
 require 'activejob-google_cloud_pubsub/pubsub_extension'
 require 'concurrent'
@@ -32,9 +33,13 @@ module ActiveJob
               logger.error e
             }
           rescue Concurrent::RejectedExecutionError
-            message.delay! 10.seconds.to_i
+            Concurrent::Promise.execute(args: message) {|msg|
+              msg.delay! 10.seconds.to_i
 
-            logger.info "Message(#{message.message_id}) was rescheduled after 10 seconds because the thread pool is full."
+              logger.info "Message(#{msg.message_id}) was rescheduled after 10 seconds because the thread pool is full."
+            }.rescue {|e|
+              logger.error e
+            }
           end
         end
       end

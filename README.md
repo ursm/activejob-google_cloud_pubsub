@@ -62,6 +62,8 @@ When passing options to the adapter, you need to create the object instead of a 
 
 ``` ruby
 Rails.application.config.active_job.queue_adapter = ActiveJob::GoogleCloudPubsub::Adapter.new(
+  async: false,
+
   pubsub: Google::Cloud::Pubsub.new(
     project: 'MY-PROJECT-ID',
     keyfile: 'path/to/keyfile.json'
@@ -69,7 +71,17 @@ Rails.application.config.active_job.queue_adapter = ActiveJob::GoogleCloudPubsub
 )
 ```
 
-Please see [`Google::Cloud::Pubsub.new`](http://googlecloudplatform.github.io/google-cloud-ruby/#/docs/google-cloud-pubsub/master/google/cloud/pubsub?method=new-class) for details.
+#### `async`
+
+Whether to publish messages asynchronously.
+
+Default: `true`
+
+#### `pubsub`
+
+The instance of `Google::Cloud::Pubsub::Project`. Please see [`Google::Cloud::Pubsub.new`](http://googlecloudplatform.github.io/google-cloud-ruby/#/docs/google-cloud-pubsub/master/google/cloud/pubsub?method=new-class) for details.
+
+Default: `Google::Cloud::Pubsub.new`
 
 ### Worker
 
