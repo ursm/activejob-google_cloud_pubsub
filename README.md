@@ -69,7 +69,7 @@ Rails.application.config.active_job.queue_adapter = ActiveJob::GoogleCloudPubsub
 )
 ```
 
-Please see [`Google::Cloud::Pubsub.new`](http://googlecloudplatform.github.io/google-cloud-ruby/#/docs/google-cloud-pubsub/v0.23.2/google/cloud/pubsub?method=new-class) for details.
+Please see [`Google::Cloud::Pubsub.new`](http://googlecloudplatform.github.io/google-cloud-ruby/#/docs/google-cloud-pubsub/latest/google/cloud/pubsub?method=new-class) for details.
 
 ### Worker
 
