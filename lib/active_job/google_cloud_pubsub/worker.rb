@@ -1,5 +1,5 @@
 require 'active_job/base'
-require 'active_job/google_cloud_pubsub/naming'
+require 'active_job/google_cloud_pubsub/pubsub_extension'
 require 'active_support/core_ext/numeric/time'
 require 'concurrent'
 require 'google/cloud/pubsub'
@@ -9,9 +9,9 @@ require 'logger'
 module ActiveJob
   module GoogleCloudPubsub
     class Worker
-      include Naming
-
       MAX_DEADLINE = 10.minutes
+
+      using PubsubExtension
 
       cattr_accessor(:logger) { Logger.new($stdout) }
 
@@ -24,7 +24,7 @@ module ActiveJob
       def run
         pool = Concurrent::ThreadPoolExecutor.new(min_threads: @min_threads, max_threads: @max_threads, max_queue: -1)
 
-        subscription.listen do |message|
+        @pubsub.subscription_for(@queue_name).listen do |message|
           begin
             Concurrent::Promise.execute(args: message, executor: pool) {|msg|
               process msg
@@ -37,12 +37,11 @@ module ActiveJob
         end
       end
 
-      def subscription
-        topic = @pubsub.topic(topic_name(@queue_name), autocreate: true)
+      def ensure_subscription
+        @pubsub.subscription_for @queue_name
 
-        topic.subscription(subscription_name(@queue_name)) || topic.subscribe(subscription_name(@queue_name))
+        nil
       end
-      alias ensure_subscription subscription
 
       private
 
