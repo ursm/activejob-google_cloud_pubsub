@@ -62,7 +62,8 @@ When passing options to the adapter, you need to create the object instead of a 
 
 ``` ruby
 Rails.application.config.active_job.queue_adapter = ActiveJob::GoogleCloudPubsub::Adapter.new(
-  async: false,
+  async:  false,
+  logger: Rails.logger,
 
   pubsub: Google::Cloud::Pubsub.new(
     project: 'MY-PROJECT-ID',
@@ -76,6 +77,12 @@ Rails.application.config.active_job.queue_adapter = ActiveJob::GoogleCloudPubsub
 Whether to publish messages asynchronously.
 
 Default: `true`
+
+#### `logger`
+
+The logger that outputs a message publishing error. Specify `nil` to disable logging.
+
+Default: `Logger.new($stdout)`
 
 #### `pubsub`
 

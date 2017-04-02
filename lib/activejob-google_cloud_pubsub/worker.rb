@@ -1,5 +1,4 @@
 require 'active_job/base'
-require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/numeric/time'
 require 'activejob-google_cloud_pubsub/pubsub_extension'
 require 'concurrent'
@@ -14,31 +13,33 @@ module ActiveJob
 
       using PubsubExtension
 
-      cattr_accessor(:logger) { Logger.new($stdout) }
-
-      def initialize(queue: 'default', min_threads: 0, max_threads: Concurrent.processor_count, pubsub: Google::Cloud::Pubsub.new)
-        @queue_name, @min_threads, @max_threads, @pubsub = queue, min_threads, max_threads, pubsub
+      def initialize(queue: 'default', min_threads: 0, max_threads: Concurrent.processor_count, pubsub: Google::Cloud::Pubsub.new, logger: Logger.new($stdout))
+        @queue_name  = queue
+        @min_threads = min_threads
+        @max_threads = max_threads
+        @pubsub      = pubsub
+        @logger      = logger
       end
 
       def run
         pool = Concurrent::ThreadPoolExecutor.new(min_threads: @min_threads, max_threads: @max_threads, max_queue: -1)
 
         @pubsub.subscription_for(@queue_name).listen do |message|
-          logger.info "Message(#{message.message_id}) was received."
+          @logger&.info "Message(#{message.message_id}) was received."
 
           begin
             Concurrent::Promise.execute(args: message, executor: pool) {|msg|
               process msg
             }.rescue {|e|
-              logger.error e
+              @logger&.error e
             }
           rescue Concurrent::RejectedExecutionError
             Concurrent::Promise.execute(args: message) {|msg|
               msg.delay! 10.seconds.to_i
 
-              logger.info "Message(#{msg.message_id}) was rescheduled after 10 seconds because the thread pool is full."
+              @logger&.info "Message(#{msg.message_id}) was rescheduled after 10 seconds because the thread pool is full."
             }.rescue {|e|
-              logger.error e
+              @logger&.error e
             }
           end
         end
@@ -64,7 +65,7 @@ module ActiveJob
 
             message.delay! deadline
 
-            logger.info "Message(#{message.message_id}) was rescheduled after #{deadline} seconds because the timestamp is #{ts}."
+            @logger&.info "Message(#{message.message_id}) was rescheduled after #{deadline} seconds because the timestamp is #{ts}."
           end
         else
           _process message
@@ -99,7 +100,7 @@ module ActiveJob
           if succeeded || failed
             message.acknowledge!
 
-            logger.info "Message(#{message.message_id}) was acknowledged."
+            @logger&.info "Message(#{message.message_id}) was acknowledged."
           else
             # terminated from outside
             message.delay! 0
