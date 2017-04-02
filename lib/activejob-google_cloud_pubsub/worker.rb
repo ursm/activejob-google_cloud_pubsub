@@ -23,6 +23,8 @@ module ActiveJob
         pool = Concurrent::ThreadPoolExecutor.new(min_threads: @min_threads, max_threads: @max_threads, max_queue: -1)
 
         @pubsub.subscription_for(@queue_name).listen do |message|
+          logger.info "Message(#{message.message_id}) was received."
+
           begin
             Concurrent::Promise.execute(args: message, executor: pool) {|msg|
               process msg
@@ -31,6 +33,8 @@ module ActiveJob
             }
           rescue Concurrent::RejectedExecutionError
             message.delay! 10.seconds.to_i
+
+            logger.info "Message(#{message.message_id}) was rescheduled after 10 seconds because the thread pool is full."
           end
         end
       end
@@ -45,12 +49,17 @@ module ActiveJob
 
       def process(message)
         if timestamp = message.attributes['timestamp']
-          ts = Time.at(timestamp.to_f)
+          ts  = Time.at(timestamp.to_f)
+          now = Time.now
 
-          if ts >= Time.now
+          if ts <= now
             _process message
           else
-            message.delay! [(ts - Time.now).ceil, MAX_DEADLINE.to_i].min
+            deadline = [(ts - now).to_f.ceil, MAX_DEADLINE.to_i].min
+
+            message.delay! deadline
+
+            logger.info "Message(#{message.message_id}) was rescheduled after #{deadline} seconds because the timestamp is #{ts}."
           end
         else
           _process message
@@ -84,6 +93,8 @@ module ActiveJob
 
           if succeeded || failed
             message.acknowledge!
+
+            logger.info "Message(#{message.message_id}) was acknowledged."
           else
             # terminated from outside
             message.delay! 0
