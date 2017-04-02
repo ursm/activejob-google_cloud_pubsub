@@ -52,7 +52,7 @@ module ActiveJob
           if ts >= Time.now
             _process message
           else
-            message.delay! [ts - Time.now, MAX_DEADLINE.to_i].min
+            message.delay! [(ts - Time.now).ceil, MAX_DEADLINE.to_i].min
           end
         else
           _process message
