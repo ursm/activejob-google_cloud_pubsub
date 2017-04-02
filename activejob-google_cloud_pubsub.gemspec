@@ -1,6 +1,6 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'active_job/google_cloud_pubsub/version'
+require 'activejob-google_cloud_pubsub/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'activejob-google_cloud_pubsub'

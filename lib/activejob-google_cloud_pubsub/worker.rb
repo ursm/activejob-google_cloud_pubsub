@@ -1,6 +1,6 @@
 require 'active_job/base'
-require 'active_job/google_cloud_pubsub/pubsub_extension'
 require 'active_support/core_ext/numeric/time'
+require 'activejob-google_cloud_pubsub/pubsub_extension'
 require 'concurrent'
 require 'google/cloud/pubsub'
 require 'json'

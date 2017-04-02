@@ -61,7 +61,7 @@ If you hit the previous action, the job will be executed.
 When passing options to the adapter, you need to create the object instead of a symbol.
 
 ``` ruby
-Rails.application.config.active_job.queue_adapter = ActiveJob::QueueAdapters::GoogleCloudPubsubAdapter.new(
+Rails.application.config.active_job.queue_adapter = ActiveJob::GoogleCloudPubsub::Adapter.new(
   pubsub: Google::Cloud::Pubsub.new(
     project: 'MY-PROJECT-ID',
     keyfile: 'path/to/keyfile.json'

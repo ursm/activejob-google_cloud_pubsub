@@ -15,7 +15,7 @@ RSpec.configure do |config|
     run_pubsub_emulator do |host|
       pubsub = Google::Cloud::Pubsub.new(emulator_host: host)
 
-      orig, ActiveJob::Base.queue_adapter = ActiveJob::Base.queue_adapter, ActiveJob::QueueAdapters::GoogleCloudPubsubAdapter.new(pubsub: pubsub)
+      orig, ActiveJob::Base.queue_adapter = ActiveJob::Base.queue_adapter, ActiveJob::GoogleCloudPubsub::Adapter.new(pubsub: pubsub)
 
       begin
         @pubsub_emulator_host = host

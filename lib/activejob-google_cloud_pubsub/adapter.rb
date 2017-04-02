@@ -1,4 +1,4 @@
-require 'active_job/google_cloud_pubsub/pubsub_extension'
+require 'activejob-google_cloud_pubsub/pubsub_extension'
 require 'google/cloud/pubsub'
 require 'json'
 

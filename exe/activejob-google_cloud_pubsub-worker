@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'activejob-google_cloud_pubsub'
-require 'google/cloud/pubsub'
 require 'optparse/kwargs'
 
 Version = ActiveJob::GoogleCloudPubsub::VERSION
