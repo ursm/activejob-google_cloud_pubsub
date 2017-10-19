@@ -24,7 +24,7 @@ RSpec.describe ActiveJob::GoogleCloudPubsub, :use_pubsub_emulator do
   around :each do |example|
     $queue = Thread::Queue.new
 
-    run_worker pubsub: Google::Cloud::Pubsub.new(emulator_host: @pubsub_emulator_host), &example
+    run_worker pubsub: Google::Cloud::Pubsub.new(emulator_host: @pubsub_emulator_host, project: 'activejob-test'), &example
   end
 
   example do

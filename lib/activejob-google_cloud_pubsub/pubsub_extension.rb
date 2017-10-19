@@ -7,7 +7,7 @@ module ActiveJob
         def topic_for(queue_name)
           name = "activejob-queue-#{queue_name}"
 
-          topic(name, autocreate: true)
+          topic(name) || create_topic(name)
         end
 
         def subscription_for(queue_name)

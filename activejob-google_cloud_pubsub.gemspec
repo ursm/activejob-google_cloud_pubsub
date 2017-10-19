@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'activejob'
   spec.add_runtime_dependency 'activesupport'
   spec.add_runtime_dependency 'concurrent-ruby'
-  spec.add_runtime_dependency 'google-cloud-pubsub'
+  spec.add_runtime_dependency 'google-cloud-pubsub', '~> 0.26.0'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
