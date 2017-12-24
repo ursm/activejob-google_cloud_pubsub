@@ -24,7 +24,7 @@ module ActiveJob
       def run
         pool = Concurrent::ThreadPoolExecutor.new(min_threads: @min_threads, max_threads: @max_threads, max_queue: -1)
 
-        @pubsub.subscription_for(@queue_name).listen do |message|
+        @pubsub.subscription_for(@queue_name).listen {|message|
           @logger&.info "Message(#{message.message_id}) was received."
 
           begin
@@ -42,7 +42,7 @@ module ActiveJob
               @logger&.error e
             }
           end
-        end
+        }.start
       end
 
       def ensure_subscription

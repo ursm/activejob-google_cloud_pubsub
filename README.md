@@ -66,8 +66,8 @@ Rails.application.config.active_job.queue_adapter = ActiveJob::GoogleCloudPubsub
   logger: Rails.logger,
 
   pubsub: Google::Cloud::Pubsub.new(
-    project: 'MY-PROJECT-ID',
-    keyfile: 'path/to/keyfile.json'
+    project_id:  'MY-PROJECT-ID',
+    credentials: 'path/to/keyfile.json'
   )
 )
 ```
@@ -120,7 +120,7 @@ Maximum number of worker threads.
 
 Default: number of logical cores
 
-#### `--project=PROJECT_ID`, `--keyfile=PATH`
+#### `--project_id=PROJECT_ID`, `--credentials=KEYFILE_PATH`
 
 Credentials of Google Cloud Platform. Please see [the document](https://github.com/GoogleCloudPlatform/google-cloud-ruby/blob/master/AUTHENTICATION.md) for details.
 

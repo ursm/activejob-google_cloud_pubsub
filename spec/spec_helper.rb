@@ -13,7 +13,7 @@ RSpec.configure do |config|
 
   config.around :each, use_pubsub_emulator: true do |example|
     run_pubsub_emulator do |host|
-      pubsub = Google::Cloud::Pubsub.new(emulator_host: host, project: 'activejob-test')
+      pubsub = Google::Cloud::Pubsub.new(emulator_host: host, project_id: 'activejob-test')
 
       orig, ActiveJob::Base.queue_adapter = ActiveJob::Base.queue_adapter, ActiveJob::GoogleCloudPubsub::Adapter.new(pubsub: pubsub)
 
