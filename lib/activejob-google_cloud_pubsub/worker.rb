@@ -29,7 +29,7 @@ module ActiveJob
 
           begin
             Concurrent::Promise.execute(args: message, executor: pool) {|msg|
-              process msg
+              process_or_delay msg
             }.rescue {|e|
               @logger&.error e
             }
@@ -53,26 +53,19 @@ module ActiveJob
 
       private
 
-      def process(message)
-        if timestamp = message.attributes['timestamp']
-          ts  = Time.at(timestamp.to_f)
-          now = Time.now
-
-          if ts <= now
-            _process message
-          else
-            deadline = [(ts - now).to_f.ceil, MAX_DEADLINE.to_i].min
-
-            message.delay! deadline
-
-            @logger&.info "Message(#{message.message_id}) was rescheduled after #{deadline} seconds because the timestamp is #{ts}."
-          end
+      def process_or_delay(message)
+        if message.time_to_process?
+          process message
         else
-          _process message
+          deadline = [message.remaining_time_to_schedule, MAX_DEADLINE.to_i].min
+
+          message.delay! deadline
+
+          @logger&.info "Message(#{message.message_id}) was scheduled at #{message.scheduled_at} so it was rescheduled after #{deadline} seconds."
         end
       end
 
-      def _process(message)
+      def process(message)
         timer_opts = {
           execution_interval: MAX_DEADLINE - 10.seconds,
           timeout_interval:   5.seconds,
