@@ -9,3 +9,7 @@ before_install:
   - curl -sL https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz | tar xz
   - google-cloud-sdk/install.sh --override-components beta pubsub-emulator --quiet
   - export PATH=$PATH:$PWD/google-cloud-sdk/bin
+
+matrix:
+  allow_failures:
+    - rvm: 2.5 # grpc does not yet support Ruby 2.5
