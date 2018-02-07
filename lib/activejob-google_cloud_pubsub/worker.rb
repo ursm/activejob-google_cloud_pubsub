@@ -43,6 +43,8 @@ module ActiveJob
             }
           end
         }.start
+
+        sleep
       end
 
       def ensure_subscription
