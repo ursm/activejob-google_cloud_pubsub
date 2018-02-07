@@ -48,7 +48,7 @@ $ gcloud beta emulators pubsub start
 
 $ eval `gcloud beta emulators pubsub env-init`
 $ cd path/to/your-app
-$ bundle exec activejob-google_cloud_pubsub-worker
+$ bundle exec activejob-google_cloud_pubsub-worker --project_id=dummy
 ```
 
 If you hit the previous action, the job will be executed.
